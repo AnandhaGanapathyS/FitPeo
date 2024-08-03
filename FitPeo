@@ -1,0 +1,121 @@
+package org.mavenprograms;
+
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
+import org.BaseClass;
+import org.LoginPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+
+
+public class FitPeo extends BaseClass {
+
+	public static void main(String[] args) throws AWTException {
+		// TODO Auto-generated method stub
+		//Navigate to the FitPeo Home page:
+		
+		//1.Open the web browser and navigate to FitPeo Homepage
+		LaunchBrowser();
+		windowMaximize();
+		getBrowser("https://www.fitpeo.com/");
+		
+		//2.Navigate to the Revenue Calculator Page:
+		//From the homepage, navigate to the Revenue Calculator Page.
+		
+		WebElement rc=driver.findElement(By.xpath("//div[text()='Revenue Calculator']"));
+		rc.click();
+		
+		//getBrowser("https://fitpeo.com/revenue-calculator");
+		
+		//3.Scroll Down to the Slider section:
+		//Scroll down the page until the revenue calculator slider is visible.
+
+		WebElement slider=driver.findElement(By.xpath("MuiSlider-root MuiSlider-colorPrimary MuiSlider-sizeMedium css-duk49p"));
+		JavascriptExecutor js = (JavascriptExecutor)driver;
+		js.executeScript("arguments[0].scrollIntoView(true)",slider);
+		//boolean slidervisible= slider.isDisplayed();
+		
+	
+		//4.Adjust the Slider:
+		//Adjust the slider to set its value to 820. we’ve highlighted the slider in red color, Once the slider is moved the bottom text field value should be updated to 820
+
+		WebElement src = driver.findElement(By.xpath("(//input[@value='200'])[1]"));
+		Actions a = new Actions(driver);
+		//Assuming the slider moves 620 units from 200 to 820
+		a.dragAndDropBy(src, 620, 0).perform();
+		WebElement target = driver.findElement(By.xpath("(//input[@value='820'])[2]"));
+		
+		String text = target.getAttribute("(//input[@value='820'])[2]");
+		
+		
+	/*	WebElement src = driver.findElement(By.xpath("(//input[@value='200'])[1]"));
+		src.click();
+		
+		WebElement target = driver.findElement(By.xpath("(//input[@value='820'])[1]"));
+		a.dragAndDrop(src, target).perform();
+		
+		*/
+		//5.Update the Text Field:
+		//Click on the text field associated with the slider.
+		//Enter the value 560 in the text field. Now the slider also should change accordingly 
+		target.click();
+		Robot r = new Robot();
+		r.keyPress(KeyEvent.VK_CONTROL);
+		r.keyPress(KeyEvent.VK_A);
+		r.keyRelease(KeyEvent.VK_A);
+		r.keyRelease(KeyEvent.VK_CONTROL);
+		target.sendKeys("560");
+		
+		
+		//6.Validate Slider Value:
+		//Ensure that when the value 560 is entered in the text field, the slider's position is updated to reflect the value 560.
+		String text2 = target.getAttribute("(//input[@value='820'])[2]");
+		String text3 = target.getAttribute("(//input[@value='820'])[1]");
+		
+		//7.Select CPT Codes:
+	//	Scroll down further and select the checkboxes for CPT-99091, CPT-99453, CPT-99454, and CPT-99474.
+		
+		WebElement box1=driver.findElement(By.xpath("(//input[@type='checkbox'])[1]"));
+		js.executeScript("arguments[0].scrollIntoView(true)",box1);
+		box1.click();
+		
+		WebElement box2=driver.findElement(By.xpath("(//input[@type='checkbox'])[2]"));
+		box2.click();
+		
+		WebElement box3=driver.findElement(By.xpath("(//input[@type='checkbox'])[3]"));
+		js.executeScript("arguments[0].scrollIntoView(true)",box3);
+		box3.click();
+		
+		WebElement box4=driver.findElement(By.xpath("(//input[@type='checkbox'])[4]"));
+		box4.click();
+		
+		//8.Validate Total Recurring Reimbursement:
+		//9.Verify that the header displaying Total Recurring Reimbursement for all Patients Per Month: shows the value $110700.
+		WebElement framewindow=driver.findElement(By.xpath("(//div[@class='MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-iol86l'])[1]"));
+		driver.switchTo().frame(framewindow);
+		WebElement value=driver.findElement(By.xpath("(//p[@class='MuiTypography-root MuiTypography-body1 inter css-12bch19'])[1]"));
+		String total = value.getText();
+		
+		//convert the value to integer
+		int value1 = Integer.parseInt(total);
+		//verify the value is above 110700
+		if(value1>110700) {
+			System.out.println("The value is above $110700");
+		}
+		else {
+			System.out.println("The value is not above $110700");
+		}
+		//10.verify the header
+		WebElement header =driver.findElement(By.xpath("(//p[@class='MuiTypography-root MuiTypography-body1 inter css-12bch19'])[1]"));
+		header.getText();
+
+		
+		
+	}
+
+}
