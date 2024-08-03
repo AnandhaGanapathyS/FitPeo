@@ -1,0 +1,159 @@
+/**
+ * 
+ */
+package org;
+
+import java.awt.Robot;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+/**
+ * @author ganap
+ *
+ */
+public class BaseClass {
+
+	/**
+	 * @param args
+	 */
+	public static WebDriver driver;
+	public static Actions a;
+	public static Alert b;
+	public static Robot r;
+	public static JavascriptExecutor js;
+	public static Select s;
+	public static FileInputStream fi;
+	public static Workbook book;
+
+	//1.Launch Browser
+	public static void LaunchBrowser() {
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+		
+
+	}
+	//2.Window maximize
+	public static void windowMaximize() {
+		driver.manage().window().maximize();
+	}
+	//3.Get browser
+	public static void getBrowser(String url) {
+		driver.get(url);//mistaken with""
+
+	}
+	//4.sendKeys
+	static public void sendKeys(WebElement e,String values) {
+		e.sendKeys(values);
+
+	}
+	//5.click
+	public static void clickBtn(WebElement e) {
+		e.click();
+	}
+	//5_1.click
+	public static void clickBtn(List<WebElement> e) {
+			((WebElement) e).click();
+		}
+	//6.getTitle
+	public static String getTitleString() {
+		String title=driver.getTitle();
+		return title;
+
+	}
+	//7.getcurrentUrl
+	public static String getCurrentUrllink() {
+		String CurrentUrl=driver.getCurrentUrl();
+		return CurrentUrl;
+
+	}
+	public static void contextClickBtn(WebElement cc) {
+		//	a = new Actions(driver);
+			a.contextClick(cc).perform();
+		}
+		//13.action-mouse-double click
+		public static void doubleClickBtn(WebElement dc) {
+			//a = new Actions(driver);
+			a.doubleClick(dc).perform();
+		}
+		//14.keyUp
+		public static void keyUpBtnShift() {
+			//a = new Actions(driver);
+			a.keyUp(Keys.SHIFT).perform();
+		}
+		
+		public static String passDataFromExcel(String name,int row,int cellNo) {
+			// TODO Auto-generated method stub
+			
+			//To create new file
+			File f = new File("C:\\Users\\ganap\\eclipse-workspace\\MavenEgProgram1Execution\\src\\test\\java\\sheet\\SampleData.xlsx");
+			//to create object for new file and get input from sheet
+			try {
+				 fi = new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//To read a file
+	
+			try {
+				book = new XSSFWorkbook(fi);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//sheet
+			Sheet sheet = book.getSheet(name);//login
+			//row
+		//	Row r = sheet.getRow(row);
+			Row r=sheet.getRow(row);
+			//cell
+			Cell cell = r.getCell(cellNo);//String or double or date
+			
+			int cellType = cell.getCellType();//0 or 1(string)
+			//Declare String as null to assume any value
+			String value = null;
+			//get string value-Madurai
+			if (cellType==1) {
+				 value=cell.getStringCellValue();
+			} 
+			//date format-first it check the cell is date or not, get the date from cell,format of date,convert the date to user format
+			else if(DateUtil.isCellDateFormatted(cell)){
+				Date d= cell.getDateCellValue();
+				SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+				value = sdf.format(d);
+			}else {
+				//numeric value - get  numeric, convert ->double->long->string(valueof())
+			double d= cell.getNumericCellValue();
+			long l = (long)d;
+			value =String.valueOf(l);
+			}
+			return value;
+			
+		
+		}
+		
+
+}
